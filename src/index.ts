@@ -10,13 +10,14 @@ import { MyRoom } from "./rooms/MyRoom";
 const port = Number(process.env.PORT || 2567);
 const app = express()
 
-app.use(function(req, res, next) {
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  next();
-});
-
 app.use(cors());
 app.use(express.json())
+
+app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+});
 
 const server = http.createServer(app);
 const gameServer = new Server({
