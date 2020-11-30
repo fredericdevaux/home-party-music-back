@@ -7,7 +7,7 @@ import { monitor } from "@colyseus/monitor";
 
 import { MyRoom } from "./rooms/MyRoom";
 
-const port = Number(process.env.PORT || 2567);
+const port = Number(process.env.PORT || 80);
 const app = express()
 
 app.use(cors());
