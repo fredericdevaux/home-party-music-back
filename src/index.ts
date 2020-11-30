@@ -10,6 +10,11 @@ import { MyRoom } from "./rooms/MyRoom";
 const port = Number(process.env.PORT || 2567);
 const app = express()
 
+app.use(function(req, res, next) {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  next();
+});
+
 app.use(cors());
 app.use(express.json())
 
