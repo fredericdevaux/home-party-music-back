@@ -1,5 +1,6 @@
 import { Schema, type, ArraySchema } from "@colyseus/schema";
 import {User} from "./User";
+import {Message} from "./Message";
 
 export class MyRoomState extends Schema {
 
@@ -8,4 +9,7 @@ export class MyRoomState extends Schema {
 
   @type([ User ])
   users = new ArraySchema<User>();
+
+  @type([ Message ])
+  messages = new ArraySchema<Message>();
 }
