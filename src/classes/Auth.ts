@@ -56,7 +56,7 @@ class Auth {
                 url: "https://accounts.spotify.com/api/token",
             };
 
-            request.post(authOptions, (error: Error, response, body: any) => {
+            request.post(authOptions, (error: Error, response: any, body: any) => {
                 if (!error && response.statusCode === 200) {
 
                     const access_token = body.access_token;
@@ -91,7 +91,7 @@ class Auth {
             url: "https://accounts.spotify.com/api/token",
         };
 
-        request.post(authOptions, (error: Error, response, body: any) => {
+        request.post(authOptions, (error: Error, response: any, body: any) => {
             if (!error && response.statusCode === 200) {
                 const access_token = body.access_token;
                 res.send({

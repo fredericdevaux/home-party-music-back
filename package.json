@@ -8,7 +8,8 @@
     "dev": "NODE_ENV=dev ts-node-dev src/index.ts",
     "start": "NODE_ENV=noprod ts-node src/index.ts",
     "loadtest": "colyseus-loadtest loadtest/example.ts --room my_room --numClients 2",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "heroku-postbuild": "npm install"
   },
   "author": "",
   "license": "UNLICENSED",
