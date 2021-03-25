@@ -42,4 +42,4 @@ app.get("/refresh_token", (req, res) => auth.getRefreshToken(req, res));
 // register colyseus monitor AFTER registering your room handlers
 app.use("/colyseus", monitor());
 gameServer.listen(port);
-console.log(`Listening on ws://localhost:${ port }`)
+console.log(`Listening on ${process.env.WEBSOCKET_URL}`)
