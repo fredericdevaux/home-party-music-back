@@ -12,4 +12,9 @@ export class MyRoomState extends Schema {
 
   @type([ Message ])
   messages = new ArraySchema<Message>();
+
+  @type("string")
+  admin: string = ""
+
+  trackState = {}
 }
