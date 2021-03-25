@@ -5,6 +5,13 @@ import {Message} from "./schema/Message";
 
 export class MyRoom extends Room {
 
+  updateProgress() {
+    this.state.interval && clearInterval(this.state.interval)
+    this.state.interval = setInterval(() => {
+      this.state.trackState.progress_ms = this.state.trackState.progress_ms + 1
+    }, 1)
+  }
+
   onCreate (options: any) {
     this.setState(new MyRoomState());
 
@@ -23,7 +30,15 @@ export class MyRoom extends Room {
     this.onMessage("track_state", (client, trackState) => {
       //console.log('WSH', trackState)
       this.state.trackState = trackState
+      this.updateProgress()
       //this.broadcast("track_state", trackState)
+    })
+
+    this.onMessage("update_track_state", (client, trackState) => {
+      //console.log('WSH', trackState)
+      this.state.trackState = trackState
+      this.broadcast("update_track_state", trackState)
+      this.updateProgress()
     })
 
   }
