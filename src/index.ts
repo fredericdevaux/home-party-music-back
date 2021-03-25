@@ -1,6 +1,6 @@
 import http from "http";
 import express from "express";
-import cookieParser from "cookie-parser";
+const cookieParser = require("cookie-parser");
 import cors from "cors";
 import { Server } from "colyseus";
 import { monitor } from "@colyseus/monitor";
