@@ -1,7 +1,7 @@
 import cors from "cors";
 import {Application, Request, Response} from "express";
 import express from "express";
-import querystring from "query-string";
+const querystring = require("query-string");
 import request from "request";
 
 class Auth {
@@ -56,7 +56,7 @@ class Auth {
                 url: "https://accounts.spotify.com/api/token",
             };
 
-            request.post(authOptions, (error, response, body) => {
+            request.post(authOptions, (error: Error, response, body: any) => {
                 if (!error && response.statusCode === 200) {
 
                     const access_token = body.access_token;
@@ -91,7 +91,7 @@ class Auth {
             url: "https://accounts.spotify.com/api/token",
         };
 
-        request.post(authOptions, (error, response, body) => {
+        request.post(authOptions, (error: Error, response, body: any) => {
             if (!error && response.statusCode === 200) {
                 const access_token = body.access_token;
                 res.send({
