@@ -21,9 +21,9 @@ export class MyRoom extends Room {
     this.state.admin = options.username
 
     this.onMessage("track_state", (client, trackState) => {
-      console.log('WSH', trackState)
+      //console.log('WSH', trackState)
       this.state.trackState = trackState
-      this.broadcast("track_state", trackState)
+      //this.broadcast("track_state", trackState)
     })
 
   }
@@ -36,7 +36,8 @@ export class MyRoom extends Room {
     let newMessage = new Message()
     newMessage.content = `L'utilisateur ${options.username} a rejoint la room`
     this.broadcast("message", newMessage)
-    this.broadcast('joined', newMessage)
+    this.broadcast('joined', newMessage )
+    client.send('track_state', this.state.trackState)
   }
 
   onLeave (client: Client, consented: boolean) {

@@ -17,6 +17,4 @@ export class MyRoomState extends Schema {
   admin: string = ""
 
   trackState = {}
-
-
 }
