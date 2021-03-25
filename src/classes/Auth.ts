@@ -1,7 +1,8 @@
 import cors from "cors";
 import {Application, Request, Response} from "express";
 import express from "express";
-const querystring = require("query-string");
+import * as querystring from "querystring";
+
 const request = require("request");
 
 class Auth {
