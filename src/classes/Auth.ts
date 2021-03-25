@@ -9,7 +9,7 @@ class Auth {
 
     private readonly CLIENT_ID = process.env.SPOTIFY_CLIENT_ID;
     private readonly CLIENT_SECRET = process.env.SPOTIFY_CLIENT_SECRET;
-    private readonly REDIRECT_URI = `http://localhost:${process.env.PORT}/callback`;
+    private readonly REDIRECT_URI = `${process.env.SERVER_URL}/callback`;
     private readonly STATE_KEY = "spotify_auth_state";
 
 
