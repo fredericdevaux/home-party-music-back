@@ -13,8 +13,18 @@ export class MyRoom extends Room {
       newMessage.author = message.author
       newMessage.authorId = client.sessionId
       newMessage.content = message.content
+      this.state.messages.push(newMessage)
       this.broadcast("message", newMessage)
     });
+
+
+    this.state.admin = options.username
+
+    this.onMessage("track_state", (client, trackState) => {
+      console.log('WSH', trackState)
+      this.state.trackState = trackState
+      this.broadcast("track_state", trackState)
+    })
 
   }
 
@@ -26,6 +36,7 @@ export class MyRoom extends Room {
     let newMessage = new Message()
     newMessage.content = `L'utilisateur ${options.username} a rejoint la room`
     this.broadcast("message", newMessage)
+    this.broadcast('joined', newMessage)
   }
 
   onLeave (client: Client, consented: boolean) {
