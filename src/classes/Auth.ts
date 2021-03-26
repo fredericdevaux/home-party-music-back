@@ -57,9 +57,8 @@ class Auth {
             };
 
             request.post(authOptions, (error, response, body) => {
-                console.log('RESPONSE : ', response, ' BODY : ', body)
-                if (!error && response.statusCode === 200) {
-
+                console.log('RESPONSE : ', response.statusCode, ' ERROR : ', error)
+                if (response.statusCode === 200) {
                     const access_token = body.access_token;
                     const refresh_token = body.refresh_token;
                     res.cookie('access_token', access_token)
