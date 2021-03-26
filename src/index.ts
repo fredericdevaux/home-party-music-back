@@ -4,7 +4,7 @@ const cookieParser = require("cookie-parser");
 import cors from "cors";
 import { Server } from "colyseus";
 import { monitor } from "@colyseus/monitor";
-require('dotenv').config({ path: `.env.${process.env.NODE_ENV}` })
+require('dotenv').config({ path: `.env.${process.env.ENV}` })
 
 // import socialRoutes from "@colyseus/social/express"
 
