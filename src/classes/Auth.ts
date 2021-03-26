@@ -58,13 +58,11 @@ class Auth {
 
             request.post(authOptions, (error, response, body) => {
                 console.log('RESPONSE : ', response.statusCode, ' ERROR : ', error)
-                if (response.statusCode === 200) {
+                if (!error && response.statusCode === 200) {
                     const access_token = body.access_token;
                     const refresh_token = body.refresh_token;
-                    res.cookie('access_token', access_token)
-                    res.cookie('refresh_token', refresh_token)
 
-                    res.redirect(`${process.env.APP_URL}/profile`);
+                    res.redirect(`${process.env.APP_URL}/login?access_token=${access_token}&refresh_token=${refresh_token}`);
                 } else {
                     res.redirect("/#" +
                         querystring.stringify({
