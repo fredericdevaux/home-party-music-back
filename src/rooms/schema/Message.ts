@@ -10,7 +10,6 @@ export class Message extends Schema {
     @type("string")
     content: string = ''
 
-    @type("string")
     date: Date = new Date()
 
     @type("string")
