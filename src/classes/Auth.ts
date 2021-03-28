@@ -11,10 +11,12 @@ class Auth {
     private readonly CLIENT_SECRET = process.env.SPOTIFY_CLIENT_SECRET;
     private readonly REDIRECT_URI = `${process.env.SERVER_URL}/callback`;
     private readonly STATE_KEY = "spotify_auth_state";
+    private REDIRECT_TO: string = ""
 
 
     public getLogin(req: Request, res: Response): void {
         const state = this.generateRandomString(16);
+        if (req.query.to) this.REDIRECT_TO = req.query.to.toString()
         res.cookie(this.STATE_KEY, state);
         const scope = "user-read-private user-read-email user-read-recently-played user-top-read user-read-playback-position user-read-playback-state user-modify-playback-state user-read-currently-playing app-remote-control streaming";
         res.redirect("https://accounts.spotify.com/authorize?" +
@@ -35,6 +37,7 @@ class Auth {
         const state = req.query.state || null;
         // @ts-ignore
         const storedState = req.cookies ? req.cookies[this.STATE_KEY] : null;
+
         if (state === null || state !== storedState) {
             res.redirect("/#" +
                 querystring.stringify({
@@ -57,12 +60,11 @@ class Auth {
             };
 
             request.post(authOptions, (error, response, body) => {
-                console.log('RESPONSE : ', response.statusCode, ' ERROR : ', error)
                 if (!error && response.statusCode === 200) {
                     const access_token = body.access_token;
                     const refresh_token = body.refresh_token;
-
-                    res.redirect(`${process.env.APP_URL}/login?access_token=${access_token}&refresh_token=${refresh_token}`);
+                    res.redirect(`${process.env.APP_URL}/?access_token=${access_token}&refresh_token=${refresh_token}${this.REDIRECT_TO ? '&to=' + this.REDIRECT_TO : ''}`);
+                    this.REDIRECT_TO = ""
                 } else {
                     res.redirect("/#" +
                         querystring.stringify({
