@@ -1,20 +1,26 @@
-import { Schema, type, ArraySchema } from "@colyseus/schema";
+import {Schema, type, ArraySchema} from "@colyseus/schema";
 import {User} from "./User";
 import {Message} from "./Message";
+import {Song} from "./Song";
+import {TrackState} from "./TrackState";
 
 export class MyRoomState extends Schema {
 
-  @type("string")
-  mySynchronizedProperty: string = "Hello world";
+    @type("string")
+    mySynchronizedProperty: string = "Hello world";
 
-  @type([ User ])
-  users = new ArraySchema<User>();
+    @type([User])
+    users = new ArraySchema<User>();
 
-  @type([ Message ])
-  messages = new ArraySchema<Message>();
+    @type([Message])
+    messages = new ArraySchema<Message>();
 
-  @type("string")
-  admin: string = ""
+    @type("string")
+    admin: string = ""
 
-  trackState = {}
+    @type([Song])
+    songsQueue = new ArraySchema<Song>();
+
+    @type(TrackState)
+    trackState = new TrackState()
 }
