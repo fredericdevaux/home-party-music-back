@@ -7,7 +7,7 @@ import {TrackState} from "./TrackState";
 export class MyRoomState extends Schema {
 
     @type("string")
-    mySynchronizedProperty: string = "Hello world";
+    name: string = "";
 
     @type([User])
     users = new ArraySchema<User>();
@@ -15,11 +15,14 @@ export class MyRoomState extends Schema {
     @type([Message])
     messages = new ArraySchema<Message>();
 
-    @type("string")
-    admin: string = ""
+    @type(User)
+    admin = new User()
 
     @type([Song])
     songsQueue = new ArraySchema<Song>();
+
+    @type([Song])
+    songsHistory = new ArraySchema<Song>();
 
     @type(TrackState)
     trackState = new TrackState()
