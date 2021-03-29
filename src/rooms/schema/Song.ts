@@ -1,5 +1,6 @@
 import {ArraySchema, Schema, type} from "@colyseus/schema";
 import {Artist} from "./Artist";
+import {User} from "./User";
 
 export class Song extends Schema {
     @type("string")
@@ -16,4 +17,7 @@ export class Song extends Schema {
 
     @type("string")
     uri: string = ''
+
+    @type(User)
+    queueBy = new User()
 }
