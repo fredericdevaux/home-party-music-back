@@ -1,4 +1,4 @@
-import { Room, Client } from "colyseus";
+import {Room, Client, generateId} from "colyseus";
 import { MyRoomState } from "./schema/MyRoomState";
 import {User} from "./schema/User";
 import {Message} from "./schema/Message";
@@ -28,9 +28,17 @@ export class MyRoom extends Room {
       newArtist.name = artist.name
       newSong.artists.push(newArtist)
     })
+
     newSong.name = song.name
-    newSong.imageUrl = song.album.images[0].url
+    newSong.imageUrl = song.album?.images[0].url || ''
     newSong.uri = song.uri
+
+    if (song.user) {
+      newSong.queueBy.sessionId = song.user.sessionId
+      newSong.queueBy.username = song.user.username
+      newSong.queueBy.avatarUrl = song.user.avatarUrl
+      newSong.queueBy.id = song.user.id
+    }
 
     return newSong
   }
@@ -57,7 +65,9 @@ export class MyRoom extends Room {
       this.broadcast("message", newMessage)
     });
 
-    this.state.admin = options.admin
+    this.state.admin.username = options.username
+    this.state.admin.avatarUrl = options.avatarUrl
+    this.state.admin.id = options.id
 
     this.onMessage("track_state", (client, trackState) => {
       this.state.trackState = this.createTrackState(trackState)
@@ -85,30 +95,39 @@ export class MyRoom extends Room {
 
   onJoin (client: Client, options: any) {
     let newUser = new User()
+
     newUser.sessionId = client.sessionId
     newUser.username = options.username
+    newUser.id = options.id
+    newUser.avatarUrl = options.avatarUrl
     this.state.users.push(newUser);
+
     let newMessage = new Message()
-    newMessage.content = `L'utilisateur ${options.username} a rejoint la room`
+    newMessage.content = `${options.username} a rejoint la room`
+
     let trackState = this.state.trackState
     trackState.progressMs = this.progressMs
+
     this.broadcast("message", newMessage)
     this.broadcast('user_join', newUser )
+
     const state = {
       trackState: TrackState,
       users: Array<User>(),
       songsQueue: Array<Song>()
     }
+
     state.trackState = trackState
     state.users = this.state.users
     state.songsQueue = this.state.songsQueue
+
     client.send('set_state', state)
   }
 
   onLeave (client: Client, consented: boolean) {
     const itemIndex = this.state.users.findIndex((user: { sessionId: string; }) => user.sessionId === client.sessionId);
     let newMessage = new Message()
-    newMessage.content = `L'utilisateur ${this.state.users[itemIndex].username} a quitté la room`
+    newMessage.content = `${this.state.users[itemIndex].username} a quitté la room`
     deleteObjectFromArray(this.state.users, 'sessionId', client.sessionId)
     this.broadcast("message", newMessage)
     this.broadcast("user_leave", client.sessionId)
