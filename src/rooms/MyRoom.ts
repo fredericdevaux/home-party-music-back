@@ -32,6 +32,7 @@ export class MyRoom extends Room {
     newSong.name = song.name
     newSong.imageUrl = song.album?.images[0].url || ''
     newSong.uri = song.uri
+    newSong.duration = song.duration_ms
 
     if (song.user) {
       newSong.queueBy.sessionId = song.user.sessionId
@@ -44,11 +45,12 @@ export class MyRoom extends Room {
   }
 
   createTrackState(trackState: any) {
+    if (!trackState) return null
+
     const newTrackState = new TrackState()
-    newTrackState.progressMs = trackState.progress_ms
-    newTrackState.item = this.createSong(trackState.item)
-    newTrackState.duration = trackState.timestamp
-    newTrackState.isPlaying = trackState.is_playing
+    newTrackState.progressMs = trackState.position
+    newTrackState.item = this.createSong(trackState.track_window.current_track)
+    newTrackState.isPlaying = !trackState.paused
 
     return newTrackState
   }
@@ -69,16 +71,14 @@ export class MyRoom extends Room {
     this.state.admin.avatarUrl = options.avatarUrl
     this.state.admin.id = options.id
 
-    this.onMessage("track_state", (client, trackState) => {
-      this.state.trackState = this.createTrackState(trackState)
-      this.updateProgress(trackState.progressMs)
-    })
-
     this.onMessage("update_track_state", (client, trackState) => {
-      this.updateProgress(trackState.progress_ms)
+      trackState && trackState.position && this.updateProgress(trackState.position)
       const newTrackState = this.createTrackState(trackState)
-      this.state.trackState = newTrackState
-      this.broadcast("update_track_state", newTrackState)
+
+      if (newTrackState) {
+        this.state.trackState = newTrackState
+        this.broadcast("update_track_state", newTrackState)
+      }
     })
 
     this.onMessage("add_song_to_queue", (client, song) => {
