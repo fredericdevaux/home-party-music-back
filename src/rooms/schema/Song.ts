@@ -18,6 +18,9 @@ export class Song extends Schema {
     @type("string")
     uri: string = ''
 
+    @type("number")
+    duration: number = 0
+
     @type(User)
     queueBy = new User()
 }
