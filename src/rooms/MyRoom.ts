@@ -6,6 +6,7 @@ import {Song} from "./schema/Song";
 import {Artist} from "./schema/Artist";
 import {TrackState} from "./schema/TrackState";
 import {deleteObjectFromArray} from "../utils/deleteObjectFromArray";
+import {findObjectFromArray} from "../utils/findObjectFromArray";
 
 export class MyRoom extends Room {
   private progressMs = 0
@@ -88,7 +89,9 @@ export class MyRoom extends Room {
     })
 
     this.onMessage("delete_song_from_queue", (client, songId) => {
+      const song = findObjectFromArray(this.state.songsQueue, 'id', songId)
       deleteObjectFromArray(this.state.songsQueue, 'id', songId)
+      this.broadcast("history_song_added", song)
       this.broadcast("song_deleted", songId)
     })
   }
