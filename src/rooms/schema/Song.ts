@@ -10,6 +10,9 @@ export class Song extends Schema {
     artists = new ArraySchema<Artist>();
 
     @type("string")
+    uid: string = ''
+
+    @type("string")
     name: string = ''
 
     @type("string")
