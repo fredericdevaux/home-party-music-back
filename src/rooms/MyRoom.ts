@@ -20,10 +20,11 @@ export class MyRoom extends Room {
     }, 100)
   }
 
-  createSong(song: any) {
+  createSong(song: any, isTrackStateItem: boolean = false) {
     let newSong = new Song()
     newSong.id = song.id
-    song.artists.forEach((artist: Artist) => {
+    if(isTrackStateItem) newSong.uid = song.uid
+    song.artists && song.artists.forEach((artist: Artist) => {
       let newArtist = new Artist()
       newArtist.id = artist.id
       newArtist.name = artist.name
@@ -31,15 +32,15 @@ export class MyRoom extends Room {
     })
 
     newSong.name = song.name
-    newSong.imageUrl = song.album?.images[0].url || ''
+    newSong.imageUrl = song.album?.images[0].url || song.imageUrl || ''
     newSong.uri = song.uri
     newSong.duration = song.duration_ms
 
-    if (song.user) {
-      newSong.queueBy.sessionId = song.user.sessionId
-      newSong.queueBy.username = song.user.username
-      newSong.queueBy.avatarUrl = song.user.avatarUrl
-      newSong.queueBy.id = song.user.id
+    if (song.queueBy) {
+      newSong.queueBy.sessionId = song.queueBy.sessionId
+      newSong.queueBy.username = song.queueBy.username
+      newSong.queueBy.avatarUrl = song.queueBy.avatarUrl
+      newSong.queueBy.id = song.queueBy .id
     }
 
     return newSong
@@ -50,7 +51,7 @@ export class MyRoom extends Room {
 
     const newTrackState = new TrackState()
     newTrackState.progressMs = trackState.position
-    newTrackState.item = this.createSong(trackState.track_window.current_track)
+    newTrackState.item = this.createSong(trackState.track_window.current_track, true)
     newTrackState.isPlaying = !trackState.paused
 
     return newTrackState
@@ -89,13 +90,15 @@ export class MyRoom extends Room {
     })
 
     this.onMessage("add_song_history", (client, song) => {
-      this.state.songsHistory.push(song)
+      const newSong = this.createSong(song)
+      this.state.songsHistory.push(newSong)
+      this.broadcast("history_song_added", newSong)
     })
 
     this.onMessage("delete_song_from_queue", (client, songId) => {
       const song = findObjectFromArray(this.state.songsQueue, 'id', songId)
       deleteObjectFromArray(this.state.songsQueue, 'id', songId)
-      this.broadcast("history_song_added", song)
+      this.broadcast("next_history_song_added", song)
       this.broadcast("song_deleted", songId)
     })
   }
