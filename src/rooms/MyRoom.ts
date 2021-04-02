@@ -117,12 +117,14 @@ export class MyRoom extends Room {
     const state = {
       trackState: TrackState,
       users: Array<User>(),
-      songsQueue: Array<Song>()
+      songsQueue: Array<Song>(),
+      songsHistory: Array<Song>()
     }
 
     state.trackState = trackState
     state.users = this.state.users
     state.songsQueue = this.state.songsQueue
+    state.songsHistory = this.state.songsHistory
 
     client.send('set_state', state)
   }
