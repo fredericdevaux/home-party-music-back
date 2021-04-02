@@ -91,6 +91,7 @@ export class MyRoom extends Room {
     this.onMessage("delete_song_from_queue", (client, songId) => {
       const song = findObjectFromArray(this.state.songsQueue, 'id', songId)
       deleteObjectFromArray(this.state.songsQueue, 'id', songId)
+      this.state.songsHistory.push(song)
       this.broadcast("history_song_added", song)
       this.broadcast("song_deleted", songId)
     })
