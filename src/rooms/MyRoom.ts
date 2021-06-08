@@ -7,6 +7,8 @@ import {Artist} from "./schema/Artist";
 import {TrackState} from "./schema/TrackState";
 import {deleteObjectFromArray} from "../utils/deleteObjectFromArray";
 import {findObjectFromArray} from "../utils/findObjectFromArray";
+import request from "request";
+import {Blindtest} from "./schema/Blindtest";
 
 export class MyRoom extends Room {
   private progressMs = 0
@@ -40,8 +42,10 @@ export class MyRoom extends Room {
       newSong.queueBy.sessionId = song.queueBy.sessionId
       newSong.queueBy.username = song.queueBy.username
       newSong.queueBy.avatarUrl = song.queueBy.avatarUrl
-      newSong.queueBy.id = song.queueBy .id
+      newSong.queueBy.id = song.queueBy.id
     }
+
+    newSong.previewUrl = song.preview_url
 
     return newSong
   }
@@ -55,6 +59,12 @@ export class MyRoom extends Room {
     newTrackState.isPlaying = !trackState.paused
 
     return newTrackState
+  }
+
+  setNextBlindtestMusic() {
+    console.log(this.state.blindtest.tracks[this.state.blindtest.round].name)
+    this.broadcast("new_blindtest_music", this.state.blindtest.tracks[this.state.blindtest.round])
+    this.state.blindtest.round++
   }
 
   onCreate (options: any) {
@@ -100,6 +110,72 @@ export class MyRoom extends Room {
       deleteObjectFromArray(this.state.songsQueue, 'id', songId)
       this.broadcast("next_history_song_added", song)
       this.broadcast("song_deleted", songId)
+    })
+
+    this.onMessage("creating_blindtest", (client) => {
+      this.state.blindtest = new Blindtest()
+      this.broadcast("change_room_state", "blindtest")
+    })
+
+    this.onMessage("choose_blindtest_tracks", (client, {genreId, accessToken}) => {
+      this.state.blindtest.state = 'loading'
+      this.broadcast("change_blindtest_state", "loading")
+
+      const requestOptions = {
+        url: `${process.env.SPOTIFY_BASE_API_URL}/browse/categories/${genreId}/playlists`,
+        method: 'GET',
+        qs: {
+          country: 'FR',
+          limit: 10
+        },
+        withCredentials: true,
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      };
+
+      request(requestOptions, (err, response, body) => {
+        if (err) {
+          console.log(err);
+        } else if (response.statusCode === 200) {
+          const res = JSON.parse(body)
+          res.playlists.items.forEach((playlist: { id: any; }) => {
+            const requestOptions2 = {
+              url: `${process.env.SPOTIFY_BASE_API_URL}/playlists/${playlist.id}/tracks`,
+              method: 'GET',
+              qs: {
+                country: 'FR',
+                limit: 3
+              },
+              withCredentials: true,
+              headers: {
+                Authorization: `Bearer ${accessToken}`,
+              },
+            };
+            request(requestOptions2, (err, response, body) => {
+              if (err) {
+                console.log(err);
+              } else if (response.statusCode === 200) {
+                const res = JSON.parse(body)
+                res.items.forEach((track: any) => {
+                  const song = this.createSong(track.track)
+                  this.state.blindtest.tracks.push(song)
+                  if (this.state.blindtest.tracks.length === 30) {
+                    this.state.blindtest.state = 'playing'
+                    this.broadcast("change_blindtest_state", "playing")
+                    //console.log(this.state.blindtest.tracks[this.state.blindtest.round].name, this.state.blindtest.round, this.state.blindtest.tracks)
+                    this.setNextBlindtestMusic()
+                  }
+                })
+              } else {
+                console.log(response.statusCode)
+              }
+            })
+          })
+        } else {
+          console.log(response.statusCode);
+        }
+      });
     })
   }
 

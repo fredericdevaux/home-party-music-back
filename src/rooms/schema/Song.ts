@@ -26,4 +26,7 @@ export class Song extends Schema {
 
     @type(User)
     queueBy = new User()
+
+    @type("string")
+    previewUrl: string = ''
 }
