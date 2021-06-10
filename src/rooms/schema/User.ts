@@ -13,5 +13,6 @@ export class User extends Schema {
     @type("string")
     avatarUrl: string = ''
 
-
+    @type("number")
+    blindtestScore: number = 0
 }
