@@ -149,6 +149,16 @@ export class MyRoom extends Room {
             this.broadcast("change_room_state", "blindtest")
         })
 
+        this.onMessage("restart_blindtest", (client) => {
+            this.state.blindtest = new Blindtest()
+            this.changeBlindtestState('choosing')
+        })
+
+        this.onMessage("disable_blindtest", (client) => {
+            this.broadcast("change_room_state", "default")
+            this.changeBlindtestState('choosing')
+        })
+
         this.onMessage("choose_blindtest_tracks", (client, {genreId, accessToken}) => {
             this.state.blindtest.state = 'loading'
             this.broadcast("change_blindtest_state", "loading")
@@ -216,11 +226,32 @@ export class MyRoom extends Room {
             });
         })
 
-        this.onMessage("increase_user_blindtestscore", (client, score) => {
+        this.onMessage("increase_user_blindtestscore", (client, {score, type}) => {
             const itemIndex = this.state.users.findIndex((user: { sessionId: string; }) => user.sessionId === client.sessionId);
             this.state.users[itemIndex].blindtestScore += score
-            console.log(this.state.users[itemIndex], score)
+            let newMessage = new Message()
+            let message = ''
+            switch (type) {
+                case 'all':
+                    message = 'a tout trouvé !'
+                    break;
+                case 'track':
+                    message = 'a trouvé le titre !'
+                    break;
+                case 'artist':
+                    message = "a trouvé l'artiste !"
+                    break;
+            }
+
+            newMessage.content = `${this.state.users[itemIndex].username} ${message}`
+            this.state.messages.push(newMessage)
+            this.broadcast("message", newMessage)
             this.broadcast("increase_user_blindtestscore", {user: this.state.users[itemIndex], score})
+        })
+
+        this.onMessage("stop_blindtest", (client) => {
+            this.changeBlindtestState('end')
+            clearInterval(this.intervalBlindtest)
         })
     }
 
