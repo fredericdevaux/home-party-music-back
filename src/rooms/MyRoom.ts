@@ -203,7 +203,7 @@ export class MyRoom extends Room {
                                     const randomSong = res.items[Math.floor(Math.random() * res.items.length)].track;
                                     const findSong = findObjectFromArray(this.state.blindtest.tracks, 'id', randomSong.id)
 
-                                    if (findSong && Object.keys(findSong).length !== 0 && findSong.constructor === Object) {
+                                    if ((findSong && Object.keys(findSong).length !== 0 && findSong.constructor === Object) || !randomSong.preview_url) {
                                         i--
                                     } else {
                                         const song = this.createSong(randomSong)
